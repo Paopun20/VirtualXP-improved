@@ -112,7 +112,7 @@ if (ENVIRONMENT_IS_NODE) {
   if (scriptDirectory.indexOf("blob:") !== 0) {
     scriptDirectory = scriptDirectory.substr(
       0,
-      scriptDirectory.lastIndexOf("/") + 1,
+      scriptDirectory.lastIndexOf("/") + 1
     );
   } else {
     scriptDirectory = "";
@@ -477,7 +477,7 @@ function createWasm() {
             err("falling back to ArrayBuffer instantiation");
             return instantiateArrayBuffer(receiveInstantiatedSource);
           });
-        },
+        }
       );
     } else {
       return instantiateArrayBuffer(receiveInstantiatedSource);
@@ -582,7 +582,7 @@ var PATH = {
       path.split("/").filter(function (p) {
         return !!p;
       }),
-      !isAbsolute,
+      !isAbsolute
     ).join("/");
     if (!path && !isAbsolute) {
       path = ".";
@@ -635,7 +635,7 @@ function _emscripten_set_main_loop_timing(mode, value) {
         var timeUntilNextTick =
           Math.max(
             0,
-            Browser.mainLoop.tickStartTime + value - _emscripten_get_now(),
+            Browser.mainLoop.tickStartTime + value - _emscripten_get_now()
           ) | 0;
         setTimeout(Browser.mainLoop.runner, timeUntilNextTick);
       };
@@ -682,12 +682,12 @@ function setMainLoop(
   fps,
   simulateInfiniteLoop,
   arg,
-  noSetTiming,
+  noSetTiming
 ) {
   noExitRuntime = true;
   assert(
     !Browser.mainLoop.func,
-    "emscripten_set_main_loop: there can only be one main loop function at once: call emscripten_cancel_main_loop to cancel the previous one before setting a new one with different parameters.",
+    "emscripten_set_main_loop: there can only be one main loop function at once: call emscripten_cancel_main_loop to cancel the previous one before setting a new one with different parameters."
   );
   Browser.mainLoop.func = browserIterationFunc;
   Browser.mainLoop.arg = arg;
@@ -713,7 +713,7 @@ function setMainLoop(
           blocker.name +
           '" took ' +
           (Date.now() - start) +
-          " ms",
+          " ms"
       );
       Browser.mainLoop.updateStatus();
       if (thisMainLoopId < Browser.mainLoop.currentlyRunningMainloop) return;
@@ -781,7 +781,7 @@ var Browser = {
         if (remaining) {
           if (remaining < expected) {
             Module["setStatus"](
-              message + " (" + (expected - remaining) + "/" + expected + ")",
+              message + " (" + (expected - remaining) + "/" + expected + ")"
             );
           } else {
             Module["setStatus"](message);
@@ -829,17 +829,17 @@ var Browser = {
     } catch (e) {
       Browser.hasBlobConstructor = false;
       console.log(
-        "warning: no blob constructor, cannot create blobs with mimetypes",
+        "warning: no blob constructor, cannot create blobs with mimetypes"
       );
     }
     Browser.BlobBuilder =
       typeof MozBlobBuilder != "undefined"
         ? MozBlobBuilder
         : typeof WebKitBlobBuilder != "undefined"
-          ? WebKitBlobBuilder
-          : !Browser.hasBlobConstructor
-            ? console.log("warning: no BlobBuilder")
-            : null;
+        ? WebKitBlobBuilder
+        : !Browser.hasBlobConstructor
+        ? console.log("warning: no BlobBuilder")
+        : null;
     Browser.URLObject =
       typeof window != "undefined"
         ? window.URL
@@ -848,7 +848,7 @@ var Browser = {
         : undefined;
     if (!Module.noImageDecoding && typeof Browser.URLObject === "undefined") {
       console.log(
-        "warning: Browser does not support creating object URLs. Built-in browser image decoding will not be available.",
+        "warning: Browser does not support creating object URLs. Built-in browser image decoding will not be available."
       );
       Module.noImageDecoding = true;
     }
@@ -860,7 +860,7 @@ var Browser = {
       byteArray,
       name,
       onload,
-      onerror,
+      onerror
     ) {
       var b = null;
       if (Browser.hasBlobConstructor) {
@@ -875,7 +875,7 @@ var Browser = {
           warnOnce(
             "Blob constructor present but fails: " +
               e +
-              "; falling back to blob builder",
+              "; falling back to blob builder"
           );
         }
       }
@@ -915,7 +915,7 @@ var Browser = {
       byteArray,
       name,
       onload,
-      onerror,
+      onerror
     ) {
       var done = false;
       function finish(audio) {
@@ -943,14 +943,14 @@ var Browser = {
           function () {
             finish(audio);
           },
-          false,
+          false
         );
         audio.onerror = function audio_onerror(event) {
           if (done) return;
           console.log(
             "warning: browser could not fully decode audio " +
               name +
-              ", trying slower base64 approach",
+              ", trying slower base64 approach"
           );
           function encode64(data) {
             var BASE =
@@ -1019,17 +1019,17 @@ var Browser = {
       document.addEventListener(
         "mozpointerlockchange",
         pointerLockChange,
-        false,
+        false
       );
       document.addEventListener(
         "webkitpointerlockchange",
         pointerLockChange,
-        false,
+        false
       );
       document.addEventListener(
         "mspointerlockchange",
         pointerLockChange,
-        false,
+        false
       );
       if (Module["elementPointerLock"]) {
         canvas.addEventListener(
@@ -1040,7 +1040,7 @@ var Browser = {
               ev.preventDefault();
             }
           },
-          false,
+          false
         );
       }
     }
@@ -1049,7 +1049,7 @@ var Browser = {
     canvas,
     useWebGL,
     setInModule,
-    webGLContextAttributes,
+    webGLContextAttributes
   ) {
     if (useWebGL && Module.ctx && canvas == Module.canvas) return Module.ctx;
     var ctx;
@@ -1079,7 +1079,7 @@ var Browser = {
       if (!useWebGL)
         assert(
           typeof GLctx === "undefined",
-          "cannot set in module if GLctx is used, but we are a non-GL context that would replace it",
+          "cannot set in module if GLctx is used, but we are a non-GL context that would replace it"
         );
       Module.ctx = ctx;
       if (useWebGL) GL.makeContextCurrent(contextHandle);
@@ -1139,7 +1139,7 @@ var Browser = {
       document.addEventListener(
         "webkitfullscreenchange",
         fullscreenChange,
-        false,
+        false
       );
       document.addEventListener("MSFullscreenChange", fullscreenChange, false);
     }
@@ -1153,14 +1153,14 @@ var Browser = {
       (canvasContainer["webkitRequestFullscreen"]
         ? function () {
             canvasContainer["webkitRequestFullscreen"](
-              Element["ALLOW_KEYBOARD_INPUT"],
+              Element["ALLOW_KEYBOARD_INPUT"]
             );
           }
         : null) ||
       (canvasContainer["webkitRequestFullScreen"]
         ? function () {
             canvasContainer["webkitRequestFullScreen"](
-              Element["ALLOW_KEYBOARD_INPUT"],
+              Element["ALLOW_KEYBOARD_INPUT"]
             );
           }
         : null);
@@ -1390,7 +1390,7 @@ var Browser = {
       function (arrayBuffer) {
         assert(
           arrayBuffer,
-          'Loading data file "' + url + '" failed (no arrayBuffer).',
+          'Loading data file "' + url + '" failed (no arrayBuffer).'
         );
         onload(new Uint8Array(arrayBuffer));
         if (dep) removeRunDependency(dep);
@@ -1401,7 +1401,7 @@ var Browser = {
         } else {
           throw 'Loading data file "' + url + '" failed.';
         }
-      },
+      }
     );
     if (dep) addRunDependency(dep);
   },
@@ -1512,7 +1512,7 @@ function _SDL_LockSurface(surf) {
     if (!surfData.image) {
       surfData.image = surfData.ctx.createImageData(
         surfData.width,
-        surfData.height,
+        surfData.height
       );
     }
     if (!SDL.defaults.opaqueFrontBuffer) return;
@@ -1521,7 +1521,7 @@ function _SDL_LockSurface(surf) {
       0,
       0,
       surfData.width,
-      surfData.height,
+      surfData.height
     );
   }
   if (surf == SDL.screen && SDL.defaults.opaqueFrontBuffer) {
@@ -1848,7 +1848,7 @@ var SDL = {
     rmask,
     gmask,
     bmask,
-    amask,
+    amask
   ) {
     flags = flags || 0;
     var is_SDL_HWSURFACE = flags & 1;
@@ -1903,7 +1903,7 @@ var SDL = {
       canvas,
       is_SDL_OPENGL,
       usePageCanvas,
-      webGLContextAttributes,
+      webGLContextAttributes
     );
     SDL.surfaces[surf] = {
       width: width,
@@ -2010,7 +2010,7 @@ var SDL = {
       dr.x,
       dr.y,
       blitw,
-      blith,
+      blith
     );
     dstData.ctx.globalAlpha = oldAlpha;
     if (dst != SDL.screen) {
@@ -2310,7 +2310,7 @@ var SDL = {
     while (SDL.pollEvent(SDL.eventHandlerTemp)) {
       wasmTable.get(SDL.eventHandler)(
         SDL.eventHandlerContext,
-        SDL.eventHandlerTemp,
+        SDL.eventHandlerTemp
       );
     }
   },
@@ -2412,7 +2412,7 @@ var SDL = {
         if (dx === 0 && dy === 0 && event.type === "touchmove") return false;
         HEAP32[ptr >> 2] = SDL.DOMEventToSDLEvent[event.type];
         HEAP32[(ptr + 4) >> 2] = _SDL_GetTicks();
-        ((tempI64 = [
+        (tempI64 = [
           touch.deviceID >>> 0,
           ((tempDouble = touch.deviceID),
           +Math.abs(tempDouble) >= 1
@@ -2421,13 +2421,13 @@ var SDL = {
                   0) >>>
                 0
               : ~~+Math.ceil(
-                  (tempDouble - +(~~tempDouble >>> 0)) / 4294967296,
+                  (tempDouble - +(~~tempDouble >>> 0)) / 4294967296
                 ) >>> 0
             : 0),
         ]),
           (HEAP32[(ptr + 8) >> 2] = tempI64[0]),
-          (HEAP32[(ptr + 12) >> 2] = tempI64[1]));
-        ((tempI64 = [
+          (HEAP32[(ptr + 12) >> 2] = tempI64[1]);
+        (tempI64 = [
           touch.identifier >>> 0,
           ((tempDouble = touch.identifier),
           +Math.abs(tempDouble) >= 1
@@ -2436,12 +2436,12 @@ var SDL = {
                   0) >>>
                 0
               : ~~+Math.ceil(
-                  (tempDouble - +(~~tempDouble >>> 0)) / 4294967296,
+                  (tempDouble - +(~~tempDouble >>> 0)) / 4294967296
                 ) >>> 0
             : 0),
         ]),
           (HEAP32[(ptr + 16) >> 2] = tempI64[0]),
-          (HEAP32[(ptr + 20) >> 2] = tempI64[1]));
+          (HEAP32[(ptr + 20) >> 2] = tempI64[1]);
         HEAPF32[(ptr + 24) >> 2] = x;
         HEAPF32[(ptr + 28) >> 2] = y;
         HEAPF32[(ptr + 32) >> 2] = dx;
@@ -2620,7 +2620,7 @@ var SDL = {
   fillWebAudioBufferFromHeap: function (
     heapPtr,
     sizeSamplesPerChannel,
-    dstAudioBuffer,
+    dstAudioBuffer
   ) {
     var audio = SDL_audio();
     var numChannels = audio.channels;
@@ -2657,13 +2657,13 @@ var SDL = {
   debugSurface: function (surfData) {
     console.log(
       "dumping surface " +
-        [surfData.surf, surfData.source, surfData.width, surfData.height],
+        [surfData.surf, surfData.source, surfData.width, surfData.height]
     );
     var image = surfData.ctx.getImageData(
       0,
       0,
       surfData.width,
-      surfData.height,
+      surfData.height
     );
     var data = image.data;
     var num = Math.min(surfData.width, surfData.height);
@@ -2677,7 +2677,7 @@ var SDL = {
             data[i * surfData.width * 4 + i * 4 + 1],
             data[i * surfData.width * 4 + i * 4 + 2],
             data[i * surfData.width * 4 + i * 4 + 3],
-          ],
+          ]
       );
     }
   },
@@ -2820,7 +2820,7 @@ function __webgl_enable_ANGLE_instanced_arrays(ctx) {
       count,
       type,
       indices,
-      primcount,
+      primcount
     ) {
       ext["drawElementsInstancedANGLE"](mode, count, type, indices, primcount);
     };
@@ -2891,7 +2891,7 @@ var GL = {
       var len = length ? HEAP32[(length + i * 4) >> 2] : -1;
       source += UTF8ToString(
         HEAP32[(string + i * 4) >> 2],
-        len < 0 ? undefined : len,
+        len < 0 ? undefined : len
       );
     }
     return source;
@@ -2933,7 +2933,7 @@ var GL = {
       GL.currentContext = null;
     if (typeof JSEvents === "object")
       JSEvents.removeAllHandlersOnTarget(
-        GL.contexts[contextHandle].GLctx.canvas,
+        GL.contexts[contextHandle].GLctx.canvas
       );
     if (GL.contexts[contextHandle] && GL.contexts[contextHandle].GLctx.canvas)
       GL.contexts[contextHandle].GLctx.canvas.GLctxObject = undefined;
@@ -2948,7 +2948,7 @@ var GL = {
     __webgl_enable_OES_vertex_array_object(GLctx);
     __webgl_enable_WEBGL_draw_buffers(GLctx);
     GLctx.disjointTimerQueryExt = GLctx.getExtension(
-      "EXT_disjoint_timer_query",
+      "EXT_disjoint_timer_query"
     );
     __webgl_enable_WEBGL_multi_draw(GLctx);
     var automaticallyEnabledExtensions = [
@@ -3003,7 +3003,7 @@ var GL = {
       var name = u.name;
       ptable.maxUniformLength = Math.max(
         ptable.maxUniformLength,
-        name.length + 1,
+        name.length + 1
       );
       if (name.slice(-1) == "]") {
         name = name.slice(0, name.lastIndexOf("["));
@@ -3083,7 +3083,7 @@ function _SDL_ShowCursor(toggle) {
       console.log(
         "SDL_ShowCursor called with unknown toggle parameter value: " +
           toggle +
-          ".",
+          "."
       );
       break;
   }
@@ -3221,7 +3221,7 @@ function _mktime(tmPtr) {
     HEAP32[(tmPtr + 8) >> 2],
     HEAP32[(tmPtr + 4) >> 2],
     HEAP32[tmPtr >> 2],
-    0,
+    0
   );
   var dst = HEAP32[(tmPtr + 32) >> 2];
   var guessedOffset = date.getTimezoneOffset();
@@ -3231,7 +3231,7 @@ function _mktime(tmPtr) {
   var dstOffset = Math.min(winterOffset, summerOffset);
   if (dst < 0) {
     HEAP32[(tmPtr + 32) >> 2] = Number(
-      summerOffset != winterOffset && dstOffset == guessedOffset,
+      summerOffset != winterOffset && dstOffset == guessedOffset
     );
   } else if (dst > 0 != (dstOffset == guessedOffset)) {
     var nonDstOffset = Math.max(winterOffset, summerOffset);
@@ -3270,7 +3270,7 @@ function readAsmConstArgs(sigPtr, buf) {
 }
 Module["requestFullscreen"] = function Module_requestFullscreen(
   lockPointer,
-  resizeCanvas,
+  resizeCanvas
 ) {
   Browser.requestFullscreen(lockPointer, resizeCanvas);
 };
@@ -3280,7 +3280,7 @@ Module["requestAnimationFrame"] = function Module_requestAnimationFrame(func) {
 Module["setCanvasSize"] = function Module_setCanvasSize(
   width,
   height,
-  noUpdates,
+  noUpdates
 ) {
   Browser.setCanvasSize(width, height, noUpdates);
 };
@@ -3297,13 +3297,13 @@ Module["createContext"] = function Module_createContext(
   canvas,
   useWebGL,
   setInModule,
-  webGLContextAttributes,
+  webGLContextAttributes
 ) {
   return Browser.createContext(
     canvas,
     useWebGL,
     setInModule,
-    webGLContextAttributes,
+    webGLContextAttributes
   );
 };
 var GLctx;
@@ -3347,7 +3347,7 @@ var ___wasm_call_ctors = (Module["___wasm_call_ctors"] = function () {
 var _malloc = (Module["_malloc"] = function () {
   return (_malloc = Module["_malloc"] = Module["asm"]["u"]).apply(
     null,
-    arguments,
+    arguments
   );
 });
 var _free = (Module["_free"] = function () {
@@ -3356,13 +3356,13 @@ var _free = (Module["_free"] = function () {
 var _memcpy = (Module["_memcpy"] = function () {
   return (_memcpy = Module["_memcpy"] = Module["asm"]["w"]).apply(
     null,
-    arguments,
+    arguments
   );
 });
 var _memset = (Module["_memset"] = function () {
   return (_memset = Module["_memset"] = Module["asm"]["x"]).apply(
     null,
-    arguments,
+    arguments
   );
 });
 var _display_send_ctrl_alt_del = (Module["_display_send_ctrl_alt_del"] =
@@ -3429,25 +3429,25 @@ var _main = (Module["_main"] = function () {
 var _parse_cfg = (Module["_parse_cfg"] = function () {
   return (_parse_cfg = Module["_parse_cfg"] = Module["asm"]["N"]).apply(
     null,
-    arguments,
+    arguments
   );
 });
 var __get_tzname = (Module["__get_tzname"] = function () {
   return (__get_tzname = Module["__get_tzname"] = Module["asm"]["O"]).apply(
     null,
-    arguments,
+    arguments
   );
 });
 var __get_daylight = (Module["__get_daylight"] = function () {
   return (__get_daylight = Module["__get_daylight"] = Module["asm"]["P"]).apply(
     null,
-    arguments,
+    arguments
   );
 });
 var __get_timezone = (Module["__get_timezone"] = function () {
   return (__get_timezone = Module["__get_timezone"] = Module["asm"]["Q"]).apply(
     null,
-    arguments,
+    arguments
   );
 });
 var calledRun;

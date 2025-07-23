@@ -1,361 +1,437 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>VirtualXP Improved (BOOT OPTIONS)</title>
+    <meta property="og:title" content="VirtualXP Improved" />
+    <meta property="og:url" content="./VirtualXP/index.html" />
+    <meta
+      property="og:description"
+      content="A web-based Windows XP emulator."
+    />
+    <meta property="og:image" content="./VirtualXP/VirtualXPShare.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="VirtualXP Improved" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="manifest" href="VirtualXP.json" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="VirtualXPFavIcon_16x16.png"
+      sizes="16x16"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="VirtualXPFavIcon_192x192.png"
+      sizes="192x192"
+    />
 
-<head>
-	<meta charset="UTF-8">
-	<title>VirtualXP</title>
-	<meta property="og:title" content="VirtualXP" />
-	<meta property="og:url" content="./VirtualXP/index.html" />
-	<meta property="og:description" content="info@lrusso.com" />
-	<meta property="og:image" content="./VirtualXP/VirtualXPShare.png" />
-	<meta property="og:type" content="website" />
-	<meta property="og:site_name" content="VirtualXP" />
-	<meta name="theme-color" content="#000000" />
-	<meta name="mobile-web-app-capable" content="yes" />
-	<meta name="apple-mobile-web-app-capable" content="yes" />
-	<link rel="manifest" href="VirtualXP.json" />
-	<link rel="icon" sizes="16x16" type="image/png" href="VirtualXPFavIcon_16x16.png" />
-	<link rel="icon" sizes="192x192" type="image/png" href="VirtualXPFavIcon_192x192.png" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no" />
-	<style>
-		html,
-		body {
-			background-color: black;
-			margin: 0;
-			padding: 0;
-			-webkit-user-select: none;
-			-moz-user-select: none;
-			user-select: none;
-			-webkit-tap-highlight-color: transparent;
-			cursor: default
-		}
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-		#canvas {
-			position: fixed;
-			left: 0;
-			right: 0;
-			top: 0;
-			bottom: 0;
-			height: 100%;
-			width: 100%
-		}
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              background: "#111",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
 
-		.percentage {
-			position: fixed;
-			width: 64px;
-			height: 64px;
-			left: 0;
-			right: 0;
-			top: 120px;
-			bottom: 0;
-			margin: auto auto;
-			border: 0;
-			font-family: Arial;
-			font-weight: bold;
-			font-size: 20px;
-			background-color: black;
-			color: white;
-			text-align: center
-		}
+  <body class="bg-background text-white">
+    <!-- Boot Options Modal -->
+    <div
+      id="bootOptionsModal"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity duration-300 opacity-0 pointer-events-none"
+    >
+      <div
+        id="bootOptionsModalContent"
+        class="bg-zinc-800 text-white w-80 rounded-lg shadow-lg p-6 transform scale-95 opacity-0 transition-all duration-300"
+      >
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-semibold">Emulator Boot Options</h3>
+          <button
+            onclick="closeBootOptionsModal()"
+            class="text-gray-400 hover:text-white text-xl leading-none"
+            aria-label="Close Modal"
+            type="button"
+          >
+            &times;
+          </button>
+        </div>
 
-		.pleasewait {
-			position: fixed;
-			width: 64px;
-			height: 64px;
-			left: 0;
-			right: 0;
-			top: -50px;
-			bottom: 0;
-			margin: auto auto;
-			border: 0
-		}
+        <div class="space-y-2 text-sm text-gray-300 mb-4">
+          <p>
+            Configure the memory and video memory for the emulator. These can be
+            changed later.
+          </p>
+          <p>Memory (MB): Minimum 64 MB recommended.</p>
+          <p>Video Memory (MB): Minimum 16 MB recommended.</p>
+        </div>
 
-		.lds-spinner {
-			color: white;
-			display: inline-block;
-			position: relative;
-			width: 64px;
-			height: 64px
-		}
+        <form id="bootOptionsForm" class="space-y-4" autocomplete="off">
+          <div>
+            <label for="memoryMB" class="block font-medium mb-1"
+              >Memory (MB)</label
+            >
+            <input
+              type="number"
+              id="memoryMB"
+              name="memoryMB"
+              min="64"
+              max="4096"
+              value="192"
+              required
+              class="w-full px-3 py-2 bg-zinc-700 text-white rounded outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
-		.lds-spinner div {
-			transform-origin: 32px 32px;
-			animation: lds-spinner 1.2s linear infinite
-		}
+          <div>
+            <label for="vramMB" class="block font-medium mb-1"
+              >Video Memory (MB)</label
+            >
+            <input
+              type="number"
+              id="vramMB"
+              name="vramMB"
+              min="16"
+              max="4096"
+              value="16"
+              required
+              class="w-full px-3 py-2 bg-zinc-700 text-white rounded outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
-		.lds-spinner div:after {
-			content: " ";
-			display: block;
-			position: fixed;
-			top: 3px;
-			left: 29px;
-			width: 5px;
-			height: 14px;
-			border-radius: 20%;
-			background: white
-		}
+          <div>
+            <label for="bootMode" class="block font-medium mb-1"
+              >Boot Mode</label
+            >
+            <select
+              id="bootMode"
+              name="bootMode"
+              class="w-full px-3 py-2 bg-zinc-700 text-white rounded outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="normal" selected>Normal</option>
+              <option value="safemode">Safe Mode</option>
+            </select>
+          </div>
 
-		.lds-spinner div:nth-child(1) {
-			transform: rotate(0deg);
-			animation-delay: -1.1s
-		}
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="enableSound" class="accent-blue-600" />
+            <label for="enableSound" class="text-sm select-none cursor-pointer"
+              >Enable Sound</label
+            >
+          </div>
 
-		.lds-spinner div:nth-child(2) {
-			transform: rotate(30deg);
-			animation-delay: -1s
-		}
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="debugMode" class="accent-blue-600" />
+            <label for="debugMode" class="text-sm select-none cursor-pointer"
+              >Enable Debug Mode</label
+            >
+          </div>
 
-		.lds-spinner div:nth-child(3) {
-			transform: rotate(60deg);
-			animation-delay: -0.9s
-		}
+          <div>
+            <label for="bootDelay" class="block font-medium mb-1"
+              >Boot Delay (ms)</label
+            >
+            <input
+              type="number"
+              id="bootDelay"
+              name="bootDelay"
+              min="0"
+              max="10000"
+              value="0"
+              class="w-full px-3 py-2 bg-zinc-700 text-white rounded outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
-		.lds-spinner div:nth-child(4) {
-			transform: rotate(90deg);
-			animation-delay: -0.8s
-		}
+          <button
+            type="submit"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-semibold"
+          >
+            Start Emulator
+          </button>
 
-		.lds-spinner div:nth-child(5) {
-			transform: rotate(120deg);
-			animation-delay: -0.7s
-		}
+          <button
+            type="button"
+            id="resetBootOptionsBtn"
+            class="w-full mt-2 bg-gray-600 hover:bg-gray-700 text-white py-2 rounded font-semibold"
+          >
+            Reset Boot Options
+          </button>
 
-		.lds-spinner div:nth-child(6) {
-			transform: rotate(150deg);
-			animation-delay: -0.6s
-		}
+          <label
+            for="loadBootOptionsFile"
+            class="block mt-4 cursor-pointer text-center text-blue-400 hover:underline select-none"
+            >Load Boot Options from JSON File</label
+          >
+          <input
+            type="file"
+            id="loadBootOptionsFile"
+            accept=".json,application/json"
+            class="hidden"
+          />
+        </form>
+      </div>
+    </div>
 
-		.lds-spinner div:nth-child(7) {
-			transform: rotate(180deg);
-			animation-delay: -0.5s
-		}
+    <!-- Loading UI -->
+    <div
+      class="pleasewait hidden fixed inset-0 flex items-center justify-center text-white"
+    >
+      Loading...
+    </div>
+    <div class="percentage fixed top-2 left-2 text-sm text-white"></div>
+    
+    <!-- End Loading UI -->
 
-		.lds-spinner div:nth-child(8) {
-			transform: rotate(210deg);
-			animation-delay: -0.4s
-		}
+    <!-- fix 16:9 full Screen -->
+    <canvas
+      id="canvas"
+      class="fixed w-full h-full object-contain bg-black"
+      tabindex="1"
+    ></canvas>
 
-		.lds-spinner div:nth-child(9) {
-			transform: rotate(240deg);
-			animation-delay: -0.3s
-		}
+    <script src="VirtualXPLoader.js"></script>
 
-		.lds-spinner div:nth-child(10) {
-			transform: rotate(270deg);
-			animation-delay: -0.2s
-		}
+    <script>
+      let finalResponse;
 
-		.lds-spinner div:nth-child(11) {
-			transform: rotate(300deg);
-			animation-delay: -0.1s
-		}
+      const modal = document.getElementById("bootOptionsModal");
+      const content = document.getElementById("bootOptionsModalContent");
 
-		.lds-spinner div:nth-child(12) {
-			transform: rotate(330deg);
-			animation-delay: 0s
-		}
+      // Show modal with fade-in/zoom-in
+      function openBootOptionsModal() {
+        modal.classList.remove("opacity-0", "pointer-events-none");
+        setTimeout(() => content.classList.remove("opacity-0", "scale-95"), 10);
+      }
 
-		@keyframes lds-spinner {
-			0% {
-				opacity: 1
-			}
+      // Close modal with fade-out/zoom-out
+      function closeBootOptionsModal() {
+        content.classList.add("opacity-0", "scale-95");
+        setTimeout(
+          () => {
+            modal.classList.add("opacity-0", "pointer-events-none");
+            setTimeout(() => {
+              // This a joke???
+              window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+            }, 300);
+          },
+          300
+        );
+      }
 
-			100% {
-				opacity: 0
-			}
-		}
-	</style>
-</head>
+      // Load saved boot options from localStorage if any
+      function loadSavedBootOptions() {
+        const savedOptions = localStorage.getItem("virtualxp_boot_options");
+        if (savedOptions) {
+          try {
+            const opts = JSON.parse(savedOptions);
+            document.getElementById("memoryMB").value = opts.mem || "192";
+            document.getElementById("vramMB").value = opts.vgamem || "16";
+            document.getElementById("bootMode").value =
+              opts.bootMode || "normal";
+            document.getElementById("enableSound").checked = !!opts.enableSound;
+            document.getElementById("debugMode").checked = !!opts.debugMode;
+            document.getElementById("bootDelay").value = opts.bootDelay || 0;
+          } catch (err) {
+            console.warn("Invalid saved boot options", err);
+          }
+        }
+      }
 
-<body>
-	<!-- Boot Options Modal -->
-	<div id="bootOptionsModal"
-		style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.4);">
-		<div id="bootOptionsModalContent"
-			style="background-color:#222; margin:10% auto; padding:20px; border:1px solid #888; width:300px; color:#fff; border-radius:8px; box-shadow:0 2px 10px #000;">
-			<h3>Emulator Boot Options</h3>
-			<form id="bootOptionsForm">
-				<label for="memoryMB">Memory (MB):</label>
-				<input type="number" id="memoryMB" name="memoryMB" min="192" max="4096" value="192" required>
-				<label for="vramMB">Video Memory (MB):</label>
-				<input type="number" id="vramMB" name="vramMB" min="16" max="4096" value="16" required>
-				<button type="submit">Start Emulator</button>
-			</form>
-		</div>
-	</div>
-	<div class="pleasewait">
-		<div class="lds-spinner">
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-		</div>
-	</div>
-	<div class="percentage"></div>
-	<canvas id="canvas" height="640" width="480"></canvas>
+      // Reset Boot Options to defaults and clear localStorage
+      function resetBootOptions() {
+        localStorage.removeItem("virtualxp_boot_options");
+        document.getElementById("memoryMB").value = "192";
+        document.getElementById("vramMB").value = "16";
+        document.getElementById("bootMode").value = "normal";
+        document.getElementById("enableSound").checked = false;
+        document.getElementById("debugMode").checked = false;
+        document.getElementById("bootDelay").value = "0";
+      }
 
-	<script src="VirtualXPLoader.js"></script>
-	<script>
-		var finalResponse;
+      // Load boot options from JSON file input
+      document
+        .getElementById("loadBootOptionsFile")
+        .addEventListener("change", (event) => {
+          const file = event.target.files[0];
+          if (!file) return;
 
-		// FUNCTION FOR GETTING THE ISO IMAGE
-		function getISOImage() {
-			// CREATING THE REQUEST
-			var oReq = new XMLHttpRequest();
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            try {
+              const json = JSON.parse(e.target.result);
+              if (json.mem)
+                document.getElementById("memoryMB").value = json.mem;
+              if (json.vgamem)
+                document.getElementById("vramMB").value = json.vgamem;
+              if (json.bootMode)
+                document.getElementById("bootMode").value = json.bootMode;
+              if (typeof json.enableSound === "boolean")
+                document.getElementById("enableSound").checked =
+                  json.enableSound;
+              if (typeof json.debugMode === "boolean")
+                document.getElementById("debugMode").checked = json.debugMode;
+              if (json.bootDelay !== undefined)
+                document.getElementById("bootDelay").value = json.bootDelay;
 
-			// SETTING WHICH FILE MUST BE OBTAINED
-			oReq.open("GET", "VirtualXP.iso", true);
+              alert("Boot options loaded from JSON file.");
+            } catch (err) {
+              alert("Invalid JSON file.");
+              console.error(err);
+            }
+          };
+          reader.readAsText(file);
+        });
 
-			// SETTING THE RESPONSE TYPE
-			oReq.responseType = "blob";
+      // On load
+      window.addEventListener("load", () => {
+        // Show modal & load saved options
+        loadSavedBootOptions();
+        openBootOptionsModal();
 
-			// SETTING WHAT WILL HAPPEN WHEN THE REQUEST IS FULLY LOADED
-			oReq.onload = function (oEvent) {
-				// CHECKING IF THE REQUEST IT'S DONE
-				if (oReq.readyState == oReq.DONE) {
-					// CHECKING IF THE REQUEST STATUS
-					if (oReq.status == 200) {
-						// GETTING THE RESPONSE CONTENT
-						finalResponse = oReq.response;
-						
-						// do change
-						var opts = { reportSpeed: function (s) { document.title = "VirtualXP - " + s + " MIPS"; } };
-						if (window._userBootOptions) {
-							opts.mem = window._userBootOptions.mem;
-							opts.vgamem = window._userBootOptions.vgamem;
-						} else {
-							opts.mem = "192";
-							opts.vgamem = "16";
-						}
-						opts.fast = true;
-						opts.bios = "VirtualXPBIOS.bin";
-						opts.vgabios = "VirtualXPVGA.bin";
-						opts.apic = false;
-						opts.acpi = false;
-						opts.pci = false;
-						opts.pcivga = false;
-						opts.floppy = false;
-						opts.winnt_hack = true;
-						opts.canvas = document.getElementById("canvas");
-						opts["cda"] = new File(["empty.txt"], "filename");
+        // Form submission (Enter key also works naturally here)
+        document.getElementById("bootOptionsForm").onsubmit = function (e) {
+          e.preventDefault();
 
-						// CREATING THE EMULATOR
-						var halfix = new Halfix(opts);
-						halfix.init(function () {
-							// RUNNING THE EMULATOR
-							halfix.run();
+          window._userBootOptions = {
+            mem: document.getElementById("memoryMB").value,
+            vgamem: document.getElementById("vramMB").value,
+            bootMode: document.getElementById("bootMode").value,
+            enableSound: document.getElementById("enableSound").checked,
+            debugMode: document.getElementById("debugMode").checked,
+            bootDelay:
+              parseInt(document.getElementById("bootDelay").value, 10) || 0,
+          };
 
-							// FORCING TO UPDATE THE SCREEN EVERY 1 SECOND
-							setInterval(function () { try { halfix.updateScreen(); } catch (err) { } }, 1000);
+          // Save options to localStorage
+          localStorage.setItem(
+            "virtualxp_boot_options",
+            JSON.stringify(window._userBootOptions)
+          );
 
-							// WAITING 5 SECONDS
-							setTimeout(function () {
-								// HIDING THE PLEASE WAIT ANIMATION AND THE PERCENTAGE
-								document.getElementsByClassName("pleasewait")[0].style.display = "none";
-								document.getElementsByClassName("percentage")[0].style.display = "none";
-							}, 5000);
-						});
-					}
-					else {
-						// IF THERE IS AN ERROR, THE REQUEST IS EXECUTED ONE MORE TIME
-						getISOImage();
-					}
-				}
-			};
+          // Close modal with animation then start
+          content.classList.add("opacity-0", "scale-95");
+          setTimeout(() => {
+            modal.classList.add("opacity-0", "pointer-events-none");
+            if (window._userBootOptions.bootDelay > 0) {
+              setTimeout(
+                () => getISOImage(),
+                window._userBootOptions.bootDelay
+              );
+            } else {
+              getISOImage();
+            }
+          }, 300);
+        };
 
-			// SETTING WHAT WILL HAPPEN WHEN THE REQUEST IS DOWNLOADING THE FILE
-			oReq.onprogress = function (oEvent) {
-				// CHECKING IF THERE IS A FILE SIZE
-				if (oEvent.total > 0) {
-					// UPDATING THE PERCENTAGE LABEL
-					document.getElementsByClassName("percentage")[0].innerHTML = Math.floor(oEvent.loaded * 100 / oEvent.total) + "%";
-				}
-			};
+        // Reset button event
+        document
+          .getElementById("resetBootOptionsBtn")
+          .addEventListener("click", resetBootOptions);
+      });
 
-			// IF DURING THE REQUEST IS AN ERROR, THE REQUEST IS EXECUTED ONE MORE TIME
-			oReq.onerror = function () { setTimeout(function () { getISOImage(); }, 1000); };
+      // Your existing getISOImage function with minor addition to handle boot options:
+      function getISOImage() {
+        const oReq = new XMLHttpRequest();
+        oReq.open("GET", "VirtualXP.iso", true);
+        oReq.responseType = "blob";
 
-			// IF DURING THE REQUEST IS A TIMEOUT, THE REQUEST IS EXECUTED ONE MORE TIME
-			oReq.ontimeout = function (e) { setTimeout(function () { getISOImage(); }, 1000); };
+        oReq.onload = function () {
+          if (oReq.readyState === oReq.DONE && oReq.status === 200) {
+            finalResponse = oReq.response;
 
-			// EXECUTING THE REQUEST
-			oReq.send(null);
-		}
+            const boot = window._userBootOptions || {};
 
-		function blockSpecialKeys(e) {
-			try {
-				// GETTING THE KEY EVENT
-				e = e || window.event;
+            const opts = {
+              reportSpeed: (s) =>
+                (document.title = "VirtualXP Improved - " + s + " MIPS"),
+              mem: boot.mem || "192",
+              vgamem: boot.vgamem || "16",
+              fast: false,
+              bios: "VirtualXPBIOS.bin",
+              vgabios: "VirtualXPVGA.bin",
+              apic: false,
+              acpi: false,
+              pci: false,
+              pcivga: false,
+              floppy: false,
+              winnt_hack: true,
+              canvas: document.getElementById("canvas"),
+              cda: new File(["empty.txt"], "filename"),
+            };
 
-				// CHECKING IF IT ANY SPECIAL KEY IS PRESSED
-				if (e.altKey || e.ctrlKey || e.metaKey || e.keyCode == 27) {
-					// BLOCKING THE SPECIAL KEY
-					e.preventDefault();
-					e.stopPropagation();
-					e.stopImmediatePropagation();
-				}
-			}
-			catch (err) {
-			}
-		}
+            if (boot.bootMode === "safemode") opts.safemode = true;
+            if (boot.enableSound) opts.sound = true;
+            if (boot.debugMode) opts.debug = true;
 
-		// DISABLING THE CONTEXT MENU
-		window.oncontextmenu = function () {
-			return false;
-		}
+            const halfix = new Halfix(opts);
+            halfix.init(() => {
+              halfix.run();
+              setInterval(() => {
+                try {
+                  halfix.updateScreen();
+                } catch {}
+              }, 1000);
 
-		// SETTING WHAT WILL HAPPEN WHEN THE WEBSITE IS FULLY LOADED
-		window.addEventListener("load", function () {
-			// SETTING WHAT WILL HAPPEN WHEN THE USER CLICKS ON THE CANVAS
-			document.getElementById("canvas").addEventListener("click", function (event) {
-				try {
-					// REQUESTING POINTER LOCK ON THE CANVAS
-					document.getElementById("canvas").requestPointerLock();
-				}
-				catch (err) {
-				}
-			});
+              setTimeout(() => {
+                document.querySelector(".pleasewait").classList.add("hidden");
+                document.querySelector(".percentage").classList.add("hidden");
+              }, 5000);
+            });
+          } else {
+            getISOImage();
+          }
 
-			// BUGFIX FOR THE SPECIALS KEYS
-			document.addEventListener("keydown", function (e) { blockSpecialKeys(e) });
-			document.addEventListener("keypress", function (e) { blockSpecialKeys(e) });
-			document.addEventListener("keyup", function (e) { blockSpecialKeys(e) });
+          
+        };
 
-			// CHECKING IF IS NOT RUNNING WITHIN AN IFRAME
-			if (window.top == window.self) {
-				// Show boot options modal on load
-				document.getElementById('bootOptionsModal').style.display = 'block';
-				document.getElementById('bootOptionsForm').onsubmit = function (e) {
-					e.preventDefault();
-					// Store user options for use in getISOImage
-					window._userBootOptions = {
-						mem: document.getElementById('memoryMB').value,
-						vgamem: document.getElementById('vramMB').value
-					};
-					document.getElementById('bootOptionsModal').style.display = 'none';
-					getISOImage();
-				};
-			}
-		});
+        oReq.onprogress = function (e) {
+          if (e.total > 0) {
+            document.querySelector(".percentage").textContent =
+              Math.floor((e.loaded * 100) / e.total) + "%";
+          }
+        };
 
-		if ("serviceWorker" in navigator) {
-			navigator.serviceWorker.register("worker.js").then(function (registration) {
-				// Registration successful
-				//console.log("ServiceWorker registration successful with scope: " + registration.scope);
-			}).catch(function (err) {
-				// Registration failed
-				//console.log("ServiceWorker registration failed: " + err);
-			});
-		}
-	</script>
-</body>
+        oReq.onerror = () => setTimeout(getISOImage, 1000);
+        oReq.ontimeout = () => setTimeout(getISOImage, 1000);
+        oReq.send(null);
+      }
 
+      // Disable right click context menu
+      window.oncontextmenu = () => false;
+
+      // Block special keys
+      function blockSpecialKeys(e) {
+        if (e.altKey || e.ctrlKey || e.metaKey || e.keyCode === 27) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }
+      document.addEventListener("keydown", blockSpecialKeys);
+      document.addEventListener("keypress", blockSpecialKeys);
+      document.addEventListener("keyup", blockSpecialKeys);
+
+      // Pointer lock on canvas
+      document.getElementById("canvas").addEventListener("click", () => {
+        try {
+          document.getElementById("canvas").requestPointerLock();
+        } catch {}
+      });
+
+      // Register service worker if supported
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("worker.js").catch(() => {});
+      }
+    </script>
+  </body>
 </html>

@@ -20,7 +20,7 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(staticCacheName).then((cache) => {
       return cache.addAll(filesToCache);
-    }),
+    })
   );
 });
 
@@ -34,6 +34,6 @@ self.addEventListener("fetch", (event) => {
         }
         return fetch(event.request);
       })
-      .catch((error) => {}),
+      .catch((error) => {})
   );
 });
