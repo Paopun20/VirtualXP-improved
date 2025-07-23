@@ -1,4 +1,4 @@
-# VirtualXP
+# VirtualXP but improved
 
 Virtual Machine running on a Web browser.
 

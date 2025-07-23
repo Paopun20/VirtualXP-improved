@@ -1,5 +1,5 @@
 const filesToCache = [
-	"VirtualXP.htm",
+	"index.html",
 	"VirtualXP.iso",
 	"VirtualXP.js",
 	"VirtualXP.json",
