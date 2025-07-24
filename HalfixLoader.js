@@ -9,8 +9,10 @@
       timestamp: new Date().toISOString(),
     };
     _eventLog.push(evt);
-    _eventListeners.forEach(function(listener) {
-      try { listener(evt); } catch(e) {}
+    _eventListeners.forEach(function (listener) {
+      try {
+        listener(evt);
+      } catch (e) {}
     });
   }
 
@@ -34,12 +36,14 @@
     this.options = options || {};
 
     this.canvas = this.options["canvas"] || null;
-    this.getEventLog = function() { return _eventLog.slice(); };
-    this.connectEvent = function(listener) {
-      if (typeof listener === 'function') _eventListeners.push(listener);
+    this.getEventLog = function () {
+      return _eventLog.slice();
+    };
+    this.connectEvent = function (listener) {
+      if (typeof listener === "function") _eventListeners.push(listener);
     };
     this.ctx = this.canvas ? this.canvas.getContext("2d") : null;
-    trackEvent('constructor', { options: this.options });
+    trackEvent("constructor", { options: this.options });
 
     this.total_memory = 256;
 
@@ -55,9 +59,9 @@
     this.image_data = null;
 
     this.config = this.buildConfiguration();
-    
+
     this.onprogress = options["onprogress"] || function (a, b, c) {};
-    trackEvent('created', {});
+    trackEvent("created", {});
   }
 
   var _cache = [];
@@ -319,17 +323,17 @@
    * @param {function(Error, object)} cb Callback
    */
   Halfix.prototype["init"] = function (cb) {
-    trackEvent('init', {});
+    trackEvent("init", {});
     // Only one instance can be loaded at a time, unfortunately
     if (_loaded) {
-      trackEvent('error', { message: 'Already initialized' });
+      trackEvent("error", { message: "Already initialized" });
       cb(new Error("Already initialized"), null);
     }
     _loaded = true;
 
     // Save our Halfix instance for later
     _halfix = this;
-    trackEvent('instance_loaded', {});
+    trackEvent("instance_loaded", {});
 
     // Set up our module instance
     global["Module"]["canvas"] = this.canvas;
@@ -340,8 +344,15 @@
     // Load emulator
     var script = document.createElement("script");
     script.src = this.getParameterByName("emulator") || "VirtualXP.js";
-    script.onload = function() { trackEvent('emulator_script_loaded', { src: script.src }); };
-    script.onerror = function(e) { trackEvent('error', { message: 'Failed to load emulator script', src: script.src }); };
+    script.onload = function () {
+      trackEvent("emulator_script_loaded", { src: script.src });
+    };
+    script.onerror = function (e) {
+      trackEvent("error", {
+        message: "Failed to load emulator script",
+        src: script.src,
+      });
+    };
     document.head.appendChild(script);
   };
 
@@ -388,14 +399,14 @@
    */
   Halfix.prototype["pause"] = function (paused) {
     this.paused = paused;
-    trackEvent('pause', { paused: paused });
+    trackEvent("pause", { paused: paused });
   };
 
   /**
    * Send a fullscreen request to the brower.
    */
   Halfix.prototype["fullscreen"] = function () {
-    trackEvent('fullscreen', {});
+    trackEvent("fullscreen", {});
     Module["requestFullscreen"]();
   };
   var cyclebase = 0;
@@ -410,7 +421,7 @@
 
   Halfix.prototype["run"] = function () {
     if (this.paused) return;
-    trackEvent('run', {});
+    trackEvent("run", {});
     try {
       var x = run();
       var temp;
@@ -426,7 +437,7 @@
         run_again(me, x);
       }, x);
     } catch (e) {
-      trackEvent('error', { message: e.toString(), stack: e.stack });
+      trackEvent("error", { message: e.toString(), stack: e.stack });
       $("error").innerHTML = "Exception thrown -- see JavaScript console";
       $("messages").innerHTML = e.toString() + "<br />" + e.stack;
       failed = true;
