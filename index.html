@@ -33,6 +33,15 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <style>
+      .glass {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+    </style>
+
     <script>
       tailwind.config = {
         theme: {
@@ -155,8 +164,7 @@
 
           <button
             type="submit"
-            class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-semibold"
-          >
+            class="glass w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-semibold">
             Start Emulator
           </button>
 
@@ -354,7 +362,7 @@
 
             const opts = {
               reportSpeed: (s) =>
-                (document.title = "VirtualXP Improved - " + s + " MIPS"),
+                (document.title = "VirtualXP Improved - MIPS: " + s + " | " + "CPU: " + halfix.cpu.cpu_kHz / 1000 + " MHz"),
               mem: boot.mem || "192",
               vgamem: boot.vgamem || "16",
               fast: false,
@@ -396,7 +404,7 @@
         };
 
         oReq.onprogress = function (e) {
-          if (e.total > 0) {
+          if (e.total) {
             document.querySelector(".percentage").textContent =
               Math.floor((e.loaded * 100) / e.total) + "%";
           }

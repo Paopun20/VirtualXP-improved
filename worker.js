@@ -1,17 +1,19 @@
 const filesToCache = [
   "index.html",
-  "VirtualXP.iso",
+  "VirtualXPLoader.js",
   "VirtualXP.js",
-  "VirtualXP.json",
   "VirtualXP.png",
+
+  "VirtualXP.iso",
+  "VirtualXP.json",
   "VirtualXP.wasm",
   "VirtualXPBIOS.bin",
-  "VirtualXPFavIcon_16x16.png",
-  "VirtualXPFavIcon_192x192.png",
-  "VirtualXPFavIcon_512x512.png",
-  "VirtualXPLoader.js",
-  "VirtualXPShare.png",
   "VirtualXPVGA.bin",
+
+  "src/VirtualXPFavIcon_16x16.png",
+  "src/VirtualXPFavIcon_192x192.png",
+  "src/VirtualXPFavIcon_512x512.png",
+  "src/VirtualXPShare.png",
 ];
 
 const staticCacheName = "virtualxp-v1";

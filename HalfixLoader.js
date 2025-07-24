@@ -61,6 +61,35 @@
     this.config = this.buildConfiguration();
 
     this.onprogress = options["onprogress"] || function (a, b, c) {};
+
+    this.cpu = {
+      cpu_kHz: wrap("emscripten_get_cpu_frequency"),
+    };
+    this.gpu = {
+      get_framebuffer: wrap("emscripten_get_framebuffer"),
+    };
+    this.mem = {
+      get_ram_size: wrap("emscripten_get_ram_size"),
+      get_vram_size: wrap("emscripten_get_vram_size"),
+    };
+    this.savestate = {
+      load_state: wrap("emscripten_load_state"),
+      save_state: wrap("emscripten_save_state"),
+      get_state_size: wrap("emscripten_get_state_size"),
+      get_disk_info: wrap("emscripten_get_disk_info"),
+    };
+    this.misc = {
+      set_fast: wrap("emscripten_set_fast"),
+      init: wrap("emscripten_init"),
+      run: wrap("emscripten_run"),
+      get_now: wrap("emscripten_get_now"),
+      get_cycles: wrap("emscripten_get_cycles"),
+      dyncall_vii: wrap("emscripten_dyncall_vii"),
+      parse_cfg: wrap("parse_cfg"),
+      get_pc_config: wrap("emscripten_get_pc_config"),
+      alloc: wrap("emscripten_alloc"),
+      free: wrap("free"),
+    }
     trackEvent("created", {});
   }
 
