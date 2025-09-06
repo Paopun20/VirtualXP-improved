@@ -1,445 +1,142 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <title>VirtualXP Improved (BOOT OPTIONS)</title>
+    <title>VirtualXP Improved</title>
     <meta property="og:title" content="VirtualXP Improved" />
     <meta property="og:url" content="./VirtualXP/index.html" />
-    <meta
-      property="og:description"
-      content="A web-based Windows XP emulator."
-    />
-    <meta property="og:image" content="./src/VirtualXPShare.png" />
+    <meta property="og:description" content="A web-based Windows XP emulator." />
+    <meta property="og:image" content="./src/VirtualXPFavIcon_192x192.png" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="VirtualXP Improved" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#1e40af" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <link rel="manifest" href="VirtualXP.json" />
-    <link
-      rel="icon"
-      type="image/png"
-      href="./src/VirtualXPFavIcon_16x16.png"
-      sizes="16x16"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      href="./src/VirtualXPFavIcon_192x192.png"
-      sizes="192x192"
-    />
+    <link rel="icon" type="image/png" href="./src/VirtualXPFavIcon_16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="./src/VirtualXPFavIcon_192x192.png" sizes="192x192" />
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Built Tailwind CSS (replace with your output.css) -->
+    <link href="./output.css" rel="stylesheet" />
 
     <style>
-      .glass {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-      }
+      /* Custom @apply for reusable components to reduce class duplication */
+      .btn-primary { @apply w-full bg-accent hover:bg-blue-500 text-white py-2 rounded-md font-semibold transition-colors; }
+      .btn-secondary { @apply w-full bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-md font-semibold transition-colors; }
+      .input-field { @apply w-full px-3 py-2 bg-gray-800 text-white rounded-md outline-none focus:ring-2 focus:ring-accent; }
+      .checkbox-label { @apply flex items-center gap-3; }
+      .glass { @apply bg-white/10 backdrop-blur-md border border-white/20 shadow-lg; }
+      .canvas-container { @apply fixed inset-0 flex items-center justify-center bg-black; }
+      .spinner { @apply border-4 border-white/20 border-l-accent animate-spin rounded-full w-6 h-6; }
+      /* Dark mode already enabled via class="dark" */
+      @media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; } }
     </style>
-
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              background: "#111",
-            },
-          },
-        },
-      };
-    </script>
   </head>
 
-  <body class="bg-background text-white">
+  <body class="bg-gray-900 text-white font-sans antialiased">
     <!-- Boot Options Modal -->
     <div
       id="bootOptionsModal"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity duration-300 opacity-0 pointer-events-none"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity duration-300 opacity-0 pointer-events-none"
+      role="dialog"
+      aria-labelledby="bootOptionsTitle"
+      aria-modal="true"
     >
       <div
         id="bootOptionsModalContent"
-        class="bg-zinc-800 text-white w-80 rounded-lg shadow-lg p-6 transform scale-95 opacity-0 transition-all duration-300"
+        class="glass w-full max-w-md rounded-xl p-6 transform scale-95 opacity-0 transition-all duration-300"
       >
         <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-semibold">Emulator Boot Options</h3>
+          <h3 id="bootOptionsTitle" class="text-xl font-bold">VirtualXP Boot Options</h3>
           <button
             onclick="closeBootOptionsModal()"
-            class="text-gray-400 hover:text-white text-xl leading-none"
-            aria-label="Close Modal"
+            class="text-gray-300 hover:text-white text-2xl"
+            aria-label="Close Boot Options Modal"
             type="button"
           >
             &times;
           </button>
         </div>
 
-        <div class="space-y-2 text-sm text-gray-300 mb-4">
-          <p>
-            Configure the memory and video memory for the emulator. These can be
-            changed later.
-          </p>
-          <p>Memory (MB): Minimum 64 MB recommended.</p>
-          <p>Video Memory (MB): Minimum 16 MB recommended.</p>
+        <div class="text-sm text-gray-300 mb-6">
+          <p>Configure emulator settings for optimal performance.</p>
+          <p class="mt-2">Low Perf Mode recommended for mobile devices.</p>
         </div>
 
         <form id="bootOptionsForm" class="space-y-4" autocomplete="off">
           <div>
-            <label for="memoryMB" class="block font-medium mb-1"
-              >Memory (MB)</label
-            >
-            <input
-              type="number"
-              id="memoryMB"
-              name="memoryMB"
-              min="64"
-              max="4096"
-              value="192"
-              required
-              class="w-full px-3 py-2 bg-zinc-700 text-white rounded outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <label for="memoryMB" class="block font-medium mb-1">Memory (MB)</label>
+            <input type="number" id="memoryMB" name="memoryMB" min="64" max="4096" value="256" required class="input-field" />
           </div>
 
           <div>
-            <label for="vramMB" class="block font-medium mb-1"
-              >Video Memory (MB)</label
-            >
-            <input
-              type="number"
-              id="vramMB"
-              name="vramMB"
-              min="16"
-              max="4096"
-              value="16"
-              required
-              class="w-full px-3 py-2 bg-zinc-700 text-white rounded outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <label for="vramMB" class="block font-medium mb-1">Video Memory (MB)</label>
+            <input type="number" id="vramMB" name="vramMB" min="16" max="4096" value="32" required class="input-field" />
           </div>
 
           <div>
-            <label for="bootMode" class="block font-medium mb-1"
-              >Boot Mode</label
-            >
-            <select
-              id="bootMode"
-              name="bootMode"
-              class="w-full px-3 py-2 bg-zinc-700 text-white rounded outline-none focus:ring-2 focus:ring-blue-500"
-            >
+            <label for="bootMode" class="block font-medium mb-1">Boot Mode</label>
+            <select id="bootMode" name="bootMode" class="input-field">
               <option value="normal" selected>Normal</option>
               <option value="safemode">Safe Mode</option>
             </select>
           </div>
 
-          <div class="flex items-center gap-2">
-            <input type="checkbox" id="enableSound" class="accent-blue-600" />
-            <label for="enableSound" class="text-sm select-none cursor-pointer"
-              >Enable Sound</label
-            >
+          <div class="checkbox-label">
+            <input type="checkbox" id="enableSound" class="accent-accent h-4 w-4" />
+            <label for="enableSound" class="text-sm cursor-pointer">Enable Sound</label>
           </div>
 
-          <div class="flex items-center gap-2">
-            <input type="checkbox" id="debugMode" class="accent-blue-600" />
-            <label for="debugMode" class="text-sm select-none cursor-pointer"
-              >Enable Debug Mode</label
-            >
+          <div class="checkbox-label">
+            <input type="checkbox" id="debugMode" class="accent-accent h-4 w-4" />
+            <label for="debugMode" class="text-sm cursor-pointer">Enable Debug Mode</label>
+          </div>
+
+          <div class="checkbox-label">
+            <input type="checkbox" id="lowPerfMode" class="accent-accent h-4 w-4" />
+            <label for="lowPerfMode" class="text-sm cursor-pointer">Low Perf Mode (for mobile)</label>
           </div>
 
           <div>
-            <label for="bootDelay" class="block font-medium mb-1"
-              >Boot Delay (ms)</label
-            >
-            <input
-              type="number"
-              id="bootDelay"
-              name="bootDelay"
-              min="0"
-              max="10000"
-              value="0"
-              class="w-full px-3 py-2 bg-zinc-700 text-white rounded outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <label for="bootDelay" class="block font-medium mb-1">Boot Delay (ms)</label>
+            <input type="number" id="bootDelay" name="bootDelay" min="0" max="10000" value="0" class="input-field" />
           </div>
 
-          <button
-            type="submit"
-            class="glass w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-semibold">
-            Start Emulator
-          </button>
+          <button type="submit" class="btn-primary">Start Emulator</button>
 
-          <button
-            type="button"
-            id="resetBootOptionsBtn"
-            class="w-full mt-2 bg-gray-600 hover:bg-gray-700 text-white py-2 rounded font-semibold"
-          >
-            Reset Boot Options
-          </button>
+          <button type="button" id="resetBootOptionsBtn" class="btn-secondary">Reset to Defaults</button>
 
-          <label
-            for="loadBootOptionsFile"
-            class="block mt-4 cursor-pointer text-center text-blue-400 hover:underline select-none"
-            >Load Boot Options from JSON File</label
-          >
-          <input
-            type="file"
-            id="loadBootOptionsFile"
-            accept=".json,application/json"
-            class="hidden"
-          />
+          <label for="loadBootOptionsFile" class="block mt-4 text-center text-accent hover:underline cursor-pointer">
+            Load Settings from JSON
+          </label>
+          <input type="file" id="loadBootOptionsFile" accept=".json,application/json" class="hidden" />
         </form>
       </div>
     </div>
 
     <!-- Loading UI -->
     <div
-      class="pleasewait hidden fixed inset-0 flex items-center justify-center text-white"
+      id="loadingUI"
+      class="hidden fixed inset-0 flex items-center justify-center bg-gray-900/80 text-white z-40"
     >
-      Loading...
+      <div class="flex items-center gap-3">
+        <div class="spinner"></div>
+        <span>Loading VirtualXP...</span>
+      </div>
     </div>
-    <div class="percentage fixed top-2 left-2 text-sm text-white"></div>
-    
-    <!-- End Loading UI -->
+    <div id="progress" class="fixed top-2 left-2 text-sm text-white hidden"></div>
 
-    <!-- fix 16:9 full Screen -->
-    <canvas
-      id="canvas"
-      class="fixed w-full h-full object-contain bg-black"
-      tabindex="1"
-    ></canvas>
+    <!-- Performance Monitor Overlay (hidden by default) -->
+    <div id="perfMonitor" class="fixed bottom-2 right-2 text-xs text-gray-300 bg-black/50 p-2 rounded hidden">
+      MIPS: <span id="mipsVal">0</span> | CPU: <span id="cpuVal">0</span> MHz
+    </div>
 
-    <script src="HalfixLoader.js"></script>
+    <!-- Emulator Canvas -->
+    <div class="canvas-container">
+      <canvas id="canvas" class="max-w-full max-h-full object-contain" tabindex="1" aria-label="VirtualXP Emulator Display"></canvas>
+    </div>
 
-    <script>
-      let finalResponse;
-
-      const modal = document.getElementById("bootOptionsModal");
-      const content = document.getElementById("bootOptionsModalContent");
-
-      // Show modal with fade-in/zoom-in
-      function openBootOptionsModal() {
-        modal.classList.remove("opacity-0", "pointer-events-none");
-        setTimeout(() => content.classList.remove("opacity-0", "scale-95"), 10);
-      }
-
-      // Close modal with fade-out/zoom-out
-      function closeBootOptionsModal() {
-        content.classList.add("opacity-0", "scale-95");
-        setTimeout(
-          () => {
-            modal.classList.add("opacity-0", "pointer-events-none");
-            setTimeout(() => {
-              // This a joke???
-              window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-            }, 300);
-          },
-          300
-        );
-      }
-
-      // Load saved boot options from localStorage if any
-      function loadSavedBootOptions() {
-        const savedOptions = localStorage.getItem("virtualxp_boot_options");
-        if (savedOptions) {
-          try {
-            const opts = JSON.parse(savedOptions);
-            document.getElementById("memoryMB").value = opts.mem || "192";
-            document.getElementById("vramMB").value = opts.vgamem || "16";
-            document.getElementById("bootMode").value =
-              opts.bootMode || "normal";
-            document.getElementById("enableSound").checked = !!opts.enableSound;
-            document.getElementById("debugMode").checked = !!opts.debugMode;
-            document.getElementById("bootDelay").value = opts.bootDelay || 0;
-          } catch (err) {
-            console.warn("Invalid saved boot options", err);
-          }
-        }
-      }
-
-      // Reset Boot Options to defaults and clear localStorage
-      function resetBootOptions() {
-        localStorage.removeItem("virtualxp_boot_options");
-        document.getElementById("memoryMB").value = "192";
-        document.getElementById("vramMB").value = "16";
-        document.getElementById("bootMode").value = "normal";
-        document.getElementById("enableSound").checked = false;
-        document.getElementById("debugMode").checked = false;
-        document.getElementById("bootDelay").value = "0";
-      }
-
-      // Load boot options from JSON file input
-      document
-        .getElementById("loadBootOptionsFile")
-        .addEventListener("change", (event) => {
-          const file = event.target.files[0];
-          if (!file) return;
-
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            try {
-              const json = JSON.parse(e.target.result);
-              if (json.mem)
-                document.getElementById("memoryMB").value = json.mem;
-              if (json.vgamem)
-                document.getElementById("vramMB").value = json.vgamem;
-              if (json.bootMode)
-                document.getElementById("bootMode").value = json.bootMode;
-              if (typeof json.enableSound === "boolean")
-                document.getElementById("enableSound").checked =
-                  json.enableSound;
-              if (typeof json.debugMode === "boolean")
-                document.getElementById("debugMode").checked = json.debugMode;
-              if (json.bootDelay !== undefined)
-                document.getElementById("bootDelay").value = json.bootDelay;
-
-              alert("Boot options loaded from JSON file.");
-            } catch (err) {
-              alert("Invalid JSON file.");
-              console.error(err);
-            }
-          };
-          reader.readAsText(file);
-        });
-
-      // On load
-      window.addEventListener("load", () => {
-        // Show modal & load saved options
-        loadSavedBootOptions();
-        openBootOptionsModal();
-
-        // Form submission (Enter key also works naturally here)
-        document.getElementById("bootOptionsForm").onsubmit = function (e) {
-          e.preventDefault();
-
-          window._userBootOptions = {
-            mem: document.getElementById("memoryMB").value,
-            vgamem: document.getElementById("vramMB").value,
-            bootMode: document.getElementById("bootMode").value,
-            enableSound: document.getElementById("enableSound").checked,
-            debugMode: document.getElementById("debugMode").checked,
-            bootDelay:
-              parseInt(document.getElementById("bootDelay").value, 10) || 0,
-          };
-
-          // Save options to localStorage
-          localStorage.setItem(
-            "virtualxp_boot_options",
-            JSON.stringify(window._userBootOptions)
-          );
-
-          // Close modal with animation then start
-          content.classList.add("opacity-0", "scale-95");
-          setTimeout(() => {
-            modal.classList.add("opacity-0", "pointer-events-none");
-            if (window._userBootOptions.bootDelay > 0) {
-              setTimeout(
-                () => getISOImage(),
-                window._userBootOptions.bootDelay
-              );
-            } else {
-              getISOImage();
-            }
-          }, 300);
-        };
-
-        // Reset button event
-        document
-          .getElementById("resetBootOptionsBtn")
-          .addEventListener("click", resetBootOptions);
-      });
-
-      // Your existing getISOImage function with minor addition to handle boot options:
-      function getISOImage() {
-        const oReq = new XMLHttpRequest();
-        oReq.open("GET", "VirtualXP.iso", true);
-        oReq.responseType = "blob";
-
-        oReq.onload = function () {
-          if (oReq.readyState === oReq.DONE && oReq.status === 200) {
-            finalResponse = oReq.response;
-
-            const boot = window._userBootOptions || {};
-
-            const opts = {
-              reportSpeed: (s) =>
-                (document.title = "VirtualXP Improved - MIPS: " + s + " | " + "CPU: " + halfix.cpu.cpu_kHz / 1000 + " MHz"),
-              mem: boot.mem || "192",
-              vgamem: boot.vgamem || "16",
-              fast: false,
-              bios: "VirtualXPBIOS.bin",
-              vgabios: "VirtualXPVGA.bin",
-              apic: false,
-              acpi: false,
-              pci: false,
-              pcivga: false,
-              floppy: false,
-              winnt_hack: true,
-              canvas: document.getElementById("canvas"),
-              cda: new File(["empty.txt"], "filename"),
-            };
-
-            if (boot.bootMode === "safemode") opts.safemode = true;
-            if (boot.enableSound) opts.sound = true;
-            if (boot.debugMode) opts.debug = true;
-
-            const halfix = new Halfix(opts);
-            halfix.init(() => {
-              halfix.run();
-              setInterval(() => {
-                try {
-                  halfix.updateScreen();
-                } catch {}
-              }, 1000);
-
-              setTimeout(() => {
-                document.querySelector(".pleasewait").classList.add("hidden");
-                document.querySelector(".percentage").classList.add("hidden");
-              }, 5000);
-            });
-          } else {
-            getISOImage();
-          }
-
-          
-        };
-
-        oReq.onprogress = function (e) {
-          if (e.total) {
-            document.querySelector(".percentage").textContent =
-              Math.floor((e.loaded * 100) / e.total) + "%";
-          }
-        };
-
-        oReq.onerror = () => setTimeout(getISOImage, 1000);
-        oReq.ontimeout = () => setTimeout(getISOImage, 1000);
-        oReq.send(null);
-      }
-
-      // Disable right click context menu
-      window.oncontextmenu = () => false;
-
-      // Block special keys
-      function blockSpecialKeys(e) {
-        if (e.altKey || e.ctrlKey || e.metaKey || e.keyCode === 27) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-      }
-      document.addEventListener("keydown", blockSpecialKeys);
-      document.addEventListener("keypress", blockSpecialKeys);
-      document.addEventListener("keyup", blockSpecialKeys);
-
-      // Pointer lock on canvas
-      document.getElementById("canvas").addEventListener("click", () => {
-        try {
-          document.getElementById("canvas").requestPointerLock();
-        } catch {}
-      });
-
-      // Register service worker if supported
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("worker.js").catch(() => {});
-      }
-    </script>
+    <script type="module" src="./virtualxp-optimized.js" defer></script>
   </body>
 </html>
